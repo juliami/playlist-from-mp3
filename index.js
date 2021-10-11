@@ -2,8 +2,7 @@ require("dotenv").config();
 var fs = require("fs");
 const path = require("path");
 var mm = require("musicmetadata");
-
-const rs = require("./templates/rs.js");
+const templates = require("./templates/index.js");
 
 const EXTENSION = ".mp3";
 
@@ -15,6 +14,9 @@ const output = [];
 const addSong = (string) => {
   output.push(string);
 };
+
+const templateName = process.argv.slice(2)[0];
+const template = templates.templates[templateName];
 
 function writeToFile(templateName) {
   const k = output.join("");
@@ -32,13 +34,14 @@ function writeToFile(templateName) {
 var itemsProcessed = 0;
 
 musicFiles.forEach((fileName, index, array) => {
+  
   var path = `${process.env.INPUT_FOLDER}/${fileName}`;
   mm(fs.createReadStream(path), function (err, metadata) {
     if (err) throw err;
-    addSong(rs.template(metadata));
+    addSong(template.parse(index, metadata));
     itemsProcessed++;
     if (itemsProcessed === array.length) {
-      writeToFile(rs.templateName);
+      writeToFile(template.name);
     }
   });
 });

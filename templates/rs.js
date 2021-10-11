@@ -1,8 +1,8 @@
-const template = (metadata) => {
+const parse = (index, metadata) => {
   const { title, artist, album } = metadata;
   const artistString = artist[0];
   return `${artistString}	${title}	${album}\n`;
 };
 
-exports.templateName = "rs";
-exports.template = template;
+exports.name = "rs";
+exports.parse = parse;
