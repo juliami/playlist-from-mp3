@@ -20,7 +20,7 @@ OUTPUT_FOLDER='/Users/user/playlists' // folder for storing .txt files with play
 ## Usage 
 
 ```sh
-npm run <TEMPLATE_NAME>
+npm run start <TEMPLATE_NAME>
 ```
 
 
