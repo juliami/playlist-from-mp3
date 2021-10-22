@@ -2,6 +2,7 @@ require("dotenv").config();
 var fs = require("fs");
 const path = require("path");
 var mm = require("musicmetadata");
+const _ = require("lodash"); 
 const templates = require("./templates/index.js");
 
 const EXTENSION = ".mp3";
@@ -19,9 +20,10 @@ const templateName = process.argv.slice(2)[0];
 const template = templates.templates[templateName];
 
 function writeToFile(templateName) {
-  const k = output.join("");
+  const sorted = _.sortBy(output, [ 'index']);
+  const sortedList = sorted.map((item) => item.text).join("");
   const outputFilePath = `${process.env.OUTPUT_FOLDER}/${templateName}_playlist.txt`;
-  fs.appendFile(outputFilePath, k, function (err) {
+  fs.appendFile(outputFilePath, sortedList, function (err) {
     if (err) {
       console.log(err);
       console.log(`${outputFilePath} could not be created`);
