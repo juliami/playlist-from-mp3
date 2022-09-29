@@ -2,9 +2,9 @@ require("dotenv").config();
 var fs = require("fs");
 const path = require("path");
 var mm = require("musicmetadata");
-const _ = require("lodash"); 
+const _ = require("lodash");
 const templates = require("./templates/index.js");
-
+const utils = require("./utils");
 const EXTENSION = ".mp3";
 
 var files = fs.readdirSync(process.env.INPUT_FOLDER);
@@ -16,36 +16,39 @@ const addSong = (string) => {
   output.push(string);
 };
 
-const templateName = process.argv.slice(2)[0];
-const template = templates.templates[templateName];
-var utc = new Date().toJSON().slice(0,10).replace(/-/g,'');
+const templatesObject = templates.templates;
 
-function writeToFile(templateName) {
-  const sorted = _.sortBy(output, [ 'index']);
-  const sortedList = sorted.map((item) => item.text).join("");
-  const outputFilePath = `${process.env.OUTPUT_FOLDER}/${utc}_${templateName}.txt`;
-  fs.appendFile(outputFilePath, sortedList, function (err) {
-    if (err) {
-      console.log(err);
-      console.log(`${outputFilePath} could not be created`);
-    } else {
-      console.log(`${outputFilePath} created`);
-    }
+const templateName = process.argv.slice(2)[0];
+const selectedTemplate = templatesObject[templateName];
+
+if (!selectedTemplate && templateName !== "all") {
+  // add colors
+  console.log(`template name ${templateName} does not exist`);
+  return false;
+}
+
+function processMusicFiles(t) {
+  var itemsProcessed = 0;
+
+  console.log(t);
+  musicFiles.forEach((fileName, index, array) => {
+    var path = `${process.env.INPUT_FOLDER}/${fileName}`;
+    mm(fs.createReadStream(path), function (err, metadata) {
+      if (err) throw err;
+      addSong(t.parse(index, metadata));
+      itemsProcessed++;
+      if (itemsProcessed === array.length) {
+        utils.writeToFile(t.name, output);
+      }
+    });
   });
 }
 
-var itemsProcessed = 0;
-
-musicFiles.forEach((fileName, index, array) => {
-  
-  var path = `${process.env.INPUT_FOLDER}/${fileName}`;
-  mm(fs.createReadStream(path), function (err, metadata) {
-    if (err) throw err;
-    addSong(template.parse(index, metadata));
-    itemsProcessed++;
-    if (itemsProcessed === array.length) {
-      console.log(template.name);
-      writeToFile(template.name);
-    }
+if (templateName === "all") {
+  _.keys(templatesObject).forEach((key) => {
+    processMusicFiles(templatesObject[key]);
   });
-});
+  return false;
+} else {
+  processMusicFiles(selectedTemplate);
+}
