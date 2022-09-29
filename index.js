@@ -1,5 +1,5 @@
 require("dotenv").config();
-const fs = require("fs");
+const fse = require("fs-extra");
 const path = require("path");
 const mm = require("musicmetadata");
 const _ = require("lodash");
@@ -7,7 +7,7 @@ const templates = require("./templates/index.js");
 const utils = require("./utils");
 const EXTENSION = ".mp3";
 
-var files = fs.readdirSync(process.env.INPUT_FOLDER);
+var files = fse.readdirSync(process.env.INPUT_FOLDER);
 const musicFiles = files.filter((file) => {
   return path.extname(file).toLowerCase() === EXTENSION;
 });
@@ -30,7 +30,7 @@ function processMusicFiles(t) {
   var itemsProcessed = 0;
   musicFiles.forEach((fileName, index, array) => {
     var path = `${process.env.INPUT_FOLDER}/${fileName}`;
-    mm(fs.createReadStream(path), function (err, metadata) {
+    mm(fse.createReadStream(path), function (err, metadata) {
       if (err) throw err;
       addSong(t.parse(index, metadata));
       itemsProcessed++;
