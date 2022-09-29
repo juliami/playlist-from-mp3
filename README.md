@@ -40,5 +40,5 @@ Example output:
 ```
 1. Helloween - If I Could Fly
 2. Blue Öyster Cult - Sole Survivor
-3. Bad Compan - Live for the Music
+3. Bad Company - Live for the Music
 ```

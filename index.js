@@ -18,11 +18,12 @@ const addSong = (string) => {
 
 const templateName = process.argv.slice(2)[0];
 const template = templates.templates[templateName];
+var utc = new Date().toJSON().slice(0,10).replace(/-/g,'');
 
 function writeToFile(templateName) {
   const sorted = _.sortBy(output, [ 'index']);
   const sortedList = sorted.map((item) => item.text).join("");
-  const outputFilePath = `${process.env.OUTPUT_FOLDER}/${templateName}_playlist.txt`;
+  const outputFilePath = `${process.env.OUTPUT_FOLDER}/${utc}_${templateName}.txt`;
   fs.appendFile(outputFilePath, sortedList, function (err) {
     if (err) {
       console.log(err);
@@ -43,6 +44,7 @@ musicFiles.forEach((fileName, index, array) => {
     addSong(template.parse(index, metadata));
     itemsProcessed++;
     if (itemsProcessed === array.length) {
+      console.log(template.name);
       writeToFile(template.name);
     }
   });
